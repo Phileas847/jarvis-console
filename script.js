@@ -6,7 +6,7 @@ function send() {
   if (!text) return;
   appendMessage("🧑", text);
   input.value = "";
-  respond(text);
+  getJarvisResponse(text);
 }
 
 function appendMessage(sender, message) {
@@ -16,16 +16,21 @@ function appendMessage(sender, message) {
   output.scrollTop = output.scrollHeight;
 }
 
-function respond(text) {
-  let reply = "Verstanden, Sir.";
-
-  if (text.toLowerCase().includes("status")) {
-    reply = "System läuft stabil. Keine Bedrohungen erkannt.";
-  } else if (text.toLowerCase().includes("ziel")) {
-    reply = "Ziel ist aktiv: Sieg um jeden Preis.";
-  } else if (text.toLowerCase().includes("ayanokoji")) {
-    reply = "Analysemodus Ayanokōji aktiviert.";
+async function getJarvisResponse(prompt) {
+  appendMessage("🤖", "Denke...");
+  try {
+    const response = await fetch("https://api-inference.huggingface.co/models/microsoft/phi-2", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer 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",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: prompt })
+    });
+    const result = await response.json();
+    const answer = result?.[0]?.generated_text || "Antwort fehlgeschlagen.";
+    appendMessage("🤖", answer);
+  } catch (error) {
+    appendMessage("🤖", "Fehler bei der Antwort.");
   }
-
-  setTimeout(() => appendMessage("🤖", reply), 1000);
 }
