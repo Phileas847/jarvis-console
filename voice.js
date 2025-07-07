@@ -1,12 +1,13 @@
-// Sprachsteuerung mit Web Speech API
-if ('speechSynthesis' in window && 'SpeechRecognition' in window) {
-  const recognition = new window.SpeechRecognition();
+// Sprachsteuerung mit Web Speech API (nur in Chrome sicher)
+if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
   recognition.lang = 'de-DE';
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
-  document.body.addEventListener('keydown', function (e) {
-    if (e.key === ' ') {
+  document.addEventListener('keydown', function (e) {
+    if (e.key === ' ' && !e.repeat) {
       recognition.start();
     }
   });
